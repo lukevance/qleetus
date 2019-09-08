@@ -1,4 +1,5 @@
 'use strict';
+const fetch = require('node-fetch');
 
 // generate twilio response
 const responder = (res, data) => {

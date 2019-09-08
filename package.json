@@ -1,0 +1,11 @@
+{
+  "name": "qleetus",
+  "version": "1.0.0",
+  "description": "Fantasy Football Textbot Service",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

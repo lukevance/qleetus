@@ -42,7 +42,9 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  ping:
-    handler: handler.ping
-  textReceiver:
-    handler: handler.textReceiver
+  app:
+    handler: handler.appHandler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+

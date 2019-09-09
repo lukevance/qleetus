@@ -1,30 +1,28 @@
 'use strict';
-const fetch = require('node-fetch');
 
-// generate twilio response
+const serverless = require('serverless-http');
+const express = require('express');
+const MessagingResponse = require('twilio').twiml.MessagingResponse;
+const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// generate twilio responses
 const responder = (res, data) => {
   const twiml = new MessagingResponse();
   twiml.message(data.text);
-  // console.log('sent:', twiml.toString());
   res.writeHead(200, {'Content-Type': 'text/xml'});
   res.end(twiml.toString());
-  // return twiml;
 };
 
-module.exports.ping = async event => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
-  };
-};
+// MAIN ENTRY point for app
+app.post('/handler', async (req, res) => {
+  const message = "Welcome to Fantasy Football Textbot!";
+  responder(res, {text: message});
+});
 
-module.exports.textReceiver = async event => {
+const appHandler = serverless(app);
 
-}
+module.exports = { appHandler };

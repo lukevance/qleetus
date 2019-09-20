@@ -32,8 +32,8 @@ app.post('/handler', async (req, res) => {
         const oppHomeAway = ["home", "away"].find(homeAway => boxscore.boxscore[homeAway].teamId !== teamId);
         const message = 
           `Score update for team ${boxscore.team.abbrev}
-          Your score: ${boxscore.boxscore[youHomeAway].totalPoints}
-          Opponent score: ${boxscore.boxscore[oppHomeAway].totalPoints}
+          Your score: ${boxscore.boxscore[youHomeAway].totalPointsLive}
+          Opponent score: ${boxscore.boxscore[oppHomeAway].totalPointsLive}
           `;
           await responder(res, {text: message});
     } else {

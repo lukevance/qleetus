@@ -26,16 +26,21 @@ app.post('/handler', async (req, res) => {
   if (req.body.From === env.myNumber){
     const teamId = 7;
     const boxscore = await getBoxscore(env.leagueId, teamId);
-    const isYourTeam = homeAway => homeAway.teamId == boxscore.team.id;
-    const youHomeAway = await ["home", "away"].filter(homeAway => boxscore.boxscore[homeAway].teamId === teamId)[0];
-    const oppHomeAway = ["home", "away"].filter(homeAway => boxscore.boxscore[homeAway].teamId !== teamId)[0];
-    const message = 
-      `Score update for team ${boxscore.team.abbrev}
-      Your score: ${boxscore.boxscore[youHomeAway]}
-      `;
-      await responder(res, {text: message});
+    if (boxscore.boxscore){
+        const isYourTeam = homeAway => homeAway.teamId == boxscore.team.id;
+        const youHomeAway = ["home", "away"].find(homeAway => boxscore.boxscore[homeAway].teamId === teamId);
+        const oppHomeAway = ["home", "away"].find(homeAway => boxscore.boxscore[homeAway].teamId !== teamId);
+        const message = 
+          `Score update for team ${boxscore.team.abbrev}
+          Your score: ${boxscore.boxscore[youHomeAway].totalPoints}
+          Opponent score: ${boxscore.boxscore[oppHomeAway].totalPoints}
+          `;
+          await responder(res, {text: message});
+    } else {
+        responder(res, {text: boxscore})
+    } 
   } else {
-    await responder(res, {text: "Welcome to Fantasy Football Textbot!"});
+    responder(res, {text: "Welcome to Fantasy Football Textbot!"});
   }
 });
 

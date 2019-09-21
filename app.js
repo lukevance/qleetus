@@ -6,8 +6,8 @@ const bodyParser = require('body-parser');
 const R = require('ramda');
 
 const env = require('./.env.json');
-
-const {getBoxscore} = require('./espn');
+const { getUser } = require('./users');
+const { getBoxscore } = require('./espn');
 
 const app = express();
 
@@ -24,30 +24,38 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const responder = async (res, data) => {
   const twiml = new MessagingResponse();
   twiml.message(data.text);
-  res.writeHead(200, {'Content-Type': 'text/xml'});
+  res.writeHead(200, { 'Content-Type': 'text/xml' });
   res.end(twiml.toString());
 };
 
 // MAIN ENTRY point for app
 app.post('/handler', async (req, res) => {
-  if (req.body.From === env.myNumber){
-    // TODO: get teamId from DB
-    const teamId = 7;
-    const data = await getBoxscore(env.leagueId, teamId);
-    if (data.boxscore){
-        const youHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId == teamId);
-        const oppHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId != teamId);
-        const message = 
-          `Score update for team ${data.team.abbrev}
-          Your score: ${data.boxscore[youHomeAway].totalPointsLive}
-          Opponent score: ${data.boxscore[oppHomeAway].totalPointsLive}
-          `;
-        responder(res, {text: message});
+  if (req.body.From) {
+    const user = await getUser(req.body.From);
+    // if no user or leagues respond with message
+    if (!user) {
+      responder(res, { text: "You are not currently signed up for Fantasy Football Textbot, signup here! www.blah.com" })
+    } else if (user && !user.leagues) {
+      console.log('no leagues');
     } else {
-        responder(res, {text: data})
-    } 
+      const league = user.leagues.find(league => league.provider === "espn");
+      const data = await getBoxscore(league.id, league.teamId);
+      if (data.boxscore) {
+        const youHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId == league.teamId);
+        const oppHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId != league.teamId);
+        const message =
+          `Score update for team ${data.team.abbrev}
+            Your score: ${data.boxscore[youHomeAway].totalPointsLive}
+            Opponent score: ${data.boxscore[oppHomeAway].totalPointsLive}`;
+        responder(res, { text: message });
+      } else {
+        responder(res, { text: data })
+      }
+    }
   } else {
-    responder(res, {text: "Welcome to Fantasy Football Textbot!"});
+    res.status(400).json({
+      error: "This Fantasy Football Textbot API expected a phone number with the incoming request."
+    });
   }
 });
 

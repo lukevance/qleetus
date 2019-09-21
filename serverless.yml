@@ -29,8 +29,8 @@ provider:
 #            - "/*"
 
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+  environment: 
+    DB_TABLENAME: ${file(./.env.json):DB_TABLENAME}
 
 # you can add packaging information here
 #package:
@@ -48,3 +48,19 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
 
+
+# resources:
+#   Resources:
+#     qleetusUsersTable:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         TableName: qleetusUsersTable
+#         AttributeDefinitions:
+#           - AttributeName: email
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: email
+#             KeyType: HASH
+#         ProvisionedThroughput:
+#           ReadCapacityUnits: 1
+#           WriteCapacityUnits: 1

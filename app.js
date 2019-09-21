@@ -6,19 +6,11 @@ const bodyParser = require('body-parser');
 const R = require('ramda');
 
 const env = require('./.env.json');
-const { getUser } = require('./users');
-const { getBoxscore } = require('./espn');
+const { scoreUpdateSummaryText } = require('./text-cmd-handler');
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
-
-// local test responses
-// const responder = (res, data) => {
-//   res.json({
-//     thing: data.text
-//   });
-// }
 
 // generate twilio responses
 const responder = async (res, data) => {
@@ -28,40 +20,24 @@ const responder = async (res, data) => {
   res.end(twiml.toString());
 };
 
+const textCommandRouter = textInfo => {
+  const textBody = textInfo.Body.toLowerCase();
+  switch (textBody) {
+    case "score update":
+      return scoreUpdateSummaryText(textInfo.From);
+    case "details":
+      return {text: "your game score details"};
+    default:
+      return {text: `no command available for "${textInfo.Body}", if you're confused, try HELP`};
+  }
+};
+
 // MAIN ENTRY point for app
 app.post('/handler', async (req, res) => {
-  if (req.body.From) {
-    console.log('from: ' + req.body.From)
-    const user = await getUser(req.body.From);
-    console.log(user);
-    // check that user was returned
-    if (user) {
-      const league = user.leagues ? user.leagues.find(league => league.provider === "espn") : null;
-      // check that user has an espn league
-      if (league) {
-        // user exists and has ESPN league
-        const data = await getBoxscore(league.id, league.teamId);
-        if (data.boxscore) {
-          const youHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId == league.teamId);
-          const oppHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId != league.teamId);
-          const message =
-            `Score update for team ${data.team.abbrev}
-            Your score: ${data.boxscore[youHomeAway].totalPointsLive}
-            Opponent score: ${data.boxscore[oppHomeAway].totalPointsLive}`;
-          responder(res, { text: message });
-        } else {
-          // no boxscore data
-          responder(res, { text: data });
-        }
-      } else {
-        // no espn league
-        responder(res, { text: "There is no ESPN fantasy league associated with your phone number, add an ESPN league here! www.blah.com" })
-      }
-    } else {
-      // no user exists
-      console.log('responding!')
-      responder(res, { text: "You are not currently signed up for Fantasy Football Textbot, signup here! www.blah.com" });
-    }
+  if (req.body.From && req.body.Body) {
+    console.log(req.body);
+    const responseObj = textCommandRouter(req.body);
+    responder(res, responseObj);
   } else {
     res.status(400).json({
       error: "This Fantasy Football Textbot API expected a phone number with the incoming request."

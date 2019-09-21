@@ -31,26 +31,36 @@ const responder = async (res, data) => {
 // MAIN ENTRY point for app
 app.post('/handler', async (req, res) => {
   if (req.body.From) {
+    console.log('from: ' + req.body.From)
     const user = await getUser(req.body.From);
-    // if no user or leagues respond with message
-    if (!user) {
-      responder(res, { text: "You are not currently signed up for Fantasy Football Textbot, signup here! www.blah.com" })
-    } else if (user && !user.leagues) {
-      console.log('no leagues');
-    } else {
-      const league = user.leagues.find(league => league.provider === "espn");
-      const data = await getBoxscore(league.id, league.teamId);
-      if (data.boxscore) {
-        const youHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId == league.teamId);
-        const oppHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId != league.teamId);
-        const message =
-          `Score update for team ${data.team.abbrev}
+    console.log(user);
+    // check that user was returned
+    if (user) {
+      const league = user.leagues ? user.leagues.find(league => league.provider === "espn") : null;
+      // check that user has an espn league
+      if (league) {
+        // user exists and has ESPN league
+        const data = await getBoxscore(league.id, league.teamId);
+        if (data.boxscore) {
+          const youHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId == league.teamId);
+          const oppHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId != league.teamId);
+          const message =
+            `Score update for team ${data.team.abbrev}
             Your score: ${data.boxscore[youHomeAway].totalPointsLive}
             Opponent score: ${data.boxscore[oppHomeAway].totalPointsLive}`;
-        responder(res, { text: message });
+          responder(res, { text: message });
+        } else {
+          // no boxscore data
+          responder(res, { text: data });
+        }
       } else {
-        responder(res, { text: data })
+        // no espn league
+        responder(res, { text: "There is no ESPN fantasy league associated with your phone number, add an ESPN league here! www.blah.com" })
       }
+    } else {
+      // no user exists
+      console.log('responding!')
+      responder(res, { text: "You are not currently signed up for Fantasy Football Textbot, signup here! www.blah.com" });
     }
   } else {
     res.status(400).json({

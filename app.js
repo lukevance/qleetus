@@ -13,6 +13,13 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// local test responses
+// const responder = (res, data) => {
+//   res.json({
+//     thing: data.text
+//   });
+// }
+
 // generate twilio responses
 const responder = async (res, data) => {
   const twiml = new MessagingResponse();
@@ -24,20 +31,20 @@ const responder = async (res, data) => {
 // MAIN ENTRY point for app
 app.post('/handler', async (req, res) => {
   if (req.body.From === env.myNumber){
+    // TODO: get teamId from DB
     const teamId = 7;
-    const boxscore = await getBoxscore(env.leagueId, teamId);
-    if (boxscore.boxscore){
-        const isYourTeam = homeAway => homeAway.teamId == boxscore.team.id;
-        const youHomeAway = ["home", "away"].find(homeAway => boxscore.boxscore[homeAway].teamId === teamId);
-        const oppHomeAway = ["home", "away"].find(homeAway => boxscore.boxscore[homeAway].teamId !== teamId);
+    const data = await getBoxscore(env.leagueId, teamId);
+    if (data.boxscore){
+        const youHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId == teamId);
+        const oppHomeAway = ["home", "away"].find(homeAway => data.boxscore[homeAway].teamId != teamId);
         const message = 
-          `Score update for team ${boxscore.team.abbrev}
-          Your score: ${boxscore.boxscore[youHomeAway].totalPointsLive}
-          Opponent score: ${boxscore.boxscore[oppHomeAway].totalPointsLive}
+          `Score update for team ${data.team.abbrev}
+          Your score: ${data.boxscore[youHomeAway].totalPointsLive}
+          Opponent score: ${data.boxscore[oppHomeAway].totalPointsLive}
           `;
-          await responder(res, {text: message});
+        responder(res, {text: message});
     } else {
-        responder(res, {text: boxscore})
+        responder(res, {text: data})
     } 
   } else {
     responder(res, {text: "Welcome to Fantasy Football Textbot!"});

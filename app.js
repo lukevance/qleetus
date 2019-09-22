@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const R = require('ramda');
 
 const env = require('./.env.json');
-const { scoreUpdateSummaryText } = require('./text-cmd-handler');
+const { scoreUpdateSummaryText, scoreUpdateDetails } = require('./text-cmd-handler');
 
 const app = express();
 
@@ -20,13 +20,13 @@ const responder = async (res, data) => {
   res.end(twiml.toString());
 };
 
-const textCommandRouter = textInfo => {
+const textCommandRouter = async textInfo => {
   const textBody = textInfo.Body.toLowerCase();
   switch (textBody) {
     case "score update":
-      return scoreUpdateSummaryText(textInfo.From);
+      return await scoreUpdateSummaryText(textInfo.From);
     case "details":
-      return {text: "your game score details"};
+      return await scoreUpdateDetails(textInfo.From);
     default:
       return {text: `no command available for "${textInfo.Body}", if you're confused, try HELP`};
   }
@@ -36,7 +36,7 @@ const textCommandRouter = textInfo => {
 app.post('/handler', async (req, res) => {
   if (req.body.From && req.body.Body) {
     console.log(req.body);
-    const responseObj = textCommandRouter(req.body);
+    const responseObj = await textCommandRouter(req.body);
     responder(res, responseObj);
   } else {
     res.status(400).json({

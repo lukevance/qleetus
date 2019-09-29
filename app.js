@@ -23,6 +23,11 @@ const responder = async (res, data) => {
 const textCommandRouter = async textInfo => {
   const textBody = textInfo.Body.toLowerCase();
   switch (textBody) {
+    case "help":
+      return {text: `
+      Currently supported commands are as follows:
+      SCORE UPDATE - shows the score of your current matchup
+      DETAILS - shows the individual scores for each player on your currently active roster`}
     case "score update":
       return await scoreUpdateSummaryText(textInfo.From);
     case "details":

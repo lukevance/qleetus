@@ -48,7 +48,7 @@ module.exports.scoreUpdateDetails = async (fromNumber) => {
         const yourActivePlayers = data.boxscore[youHomeAway].rosterForCurrentScoringPeriod.entries.filter(plyr => plyr.lineupSlotId != 20);
         const diff = (a, b) => a.lineupSlotId - b.lineupSlotId;
         const orderedPlayers = R.sort(diff, yourActivePlayers);
-        const activePlayersSummary = orderedPlayers.map(plyr => `${plyr.playerPoolEntry.player.fullName}: ${plyr.playerPoolEntry.appliedStatTotal}`);
+        const activePlayersSummary = orderedPlayers.map(plyr => `${plyr.playerPoolEntry.player.fullName}: ${Math.round( plyr.playerPoolEntry.appliedStatTotal * 10) / 10}`);
         return {
           text: activePlayersSummary.join("\n")
         };

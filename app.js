@@ -23,7 +23,7 @@ const responder = async (res, data) => {
 const textCommandRouter = async textInfo => {
   const textBody = textInfo.Body.toLowerCase();
   switch (textBody) {
-    case "help":
+    case "options":
       return {text: `
       Currently supported commands are as follows:
       SCORE UPDATE - shows the score of your current matchup
@@ -33,7 +33,7 @@ const textCommandRouter = async textInfo => {
     case "details":
       return await scoreUpdateDetails(textInfo.From);
     default:
-      return {text: `no command available for "${textInfo.Body}", if you're confused, try HELP`};
+      return {text: `no command available for "${textInfo.Body}", if you're confused, try OPTIONS`};
   }
 };
 

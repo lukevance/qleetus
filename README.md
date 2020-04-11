@@ -21,7 +21,7 @@ Install [Serverless Framework](https://www.serverless.com), you won't need an ac
 npm install -g serverless
 ```
 
-Finally, configure serverless with credentials for AWS, they have a (helpful guide)[https://serverless.com/framework/docs/providers/aws/cli-reference/config-credentials/].
+Finally, configure serverless with credentials for AWS, they have a [helpful guide](https://serverless.com/framework/docs/providers/aws/cli-reference/config-credentials/).
 
 
 ### Installing

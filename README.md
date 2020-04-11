@@ -5,17 +5,17 @@ Fantasy football can get intense. I get it. But for the days when you're not sit
 
 ## Getting Started
 
-Sign up with your league here!
+See a demo or [Sign up](https://www.notion.so/Qleetus-2a32b02d5ded43e89f43351ee68bab05) for free with your fantasy league info.
 
-Or spin up your own with Twilio, Serverless and DynamoDB.
+Or fork/clone this repo and spin up your own with Twilio, Serverless and DynamoDB.
 
 ### Prerequisites
 
-Get a free [Twilio account](www.twilio.com/referral/uzRDAF) and get a free phone number for your first 6 months.
+Get a free [Twilio account](https://www.twilio.com/referral/uzRDAF) and credit for 6 months of a free phone number.
 
-Sign up for a trial account of [Amazon Web Services](https://aws.amazon.com/free/) if you don't already have one.
+An Amazon Web Services account. Signup for the [free tier](https://aws.amazon.com/free/) if you don't already have one.
 
-Install Serverless Framework, you won't need an account, but it's free and can be helpful.
+Install [Serverless Framework](https://www.serverless.com), you won't need an account, but it's free and can be helpful.
 
 ```
 npm install -g serverless
@@ -26,7 +26,7 @@ Finally, configure serverless with credentials for AWS, they have a (helpful gui
 
 ### Installing
 
-Install npm dependencies:
+After forking or cloning this repo, from inside the main directory install the [npm](https://npmjs.com) dependencies:
 
 ```
 npm install

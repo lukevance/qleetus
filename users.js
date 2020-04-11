@@ -1,8 +1,6 @@
 const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
+const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: process.env.DYNAMO_REGION });
 const TABLE_NAME = process.env.DB_TABLENAME;
-// const env = require('./.env.json');
-// const TABLE_NAME = env.DB_TABLENAME;
 
 const getUser = async fromNumber => {
     const user = await dynamoDb

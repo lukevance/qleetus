@@ -1,4 +1,5 @@
-# Qleetus: a chatbot for fantasy football score updates
+# Qleetus
+###A Chatbot for Fantasy Football Score Updates
 
 Fantasy football can get intense. I get it. But for the days when you're not sitting by your TV, don't be the friend at the park who can't stop refreshing the app on your smartphone. Instead text Qleetus for updates, stay calm and keep your head in the game (kind of).  
 
